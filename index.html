@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <?php
+      $BOT_TOKEN = "1574166626:AAF8oDo08S8-3DWqwb2j3raFAoFQKqzeQOI";
+
+      //---! Variable Biar enggak panjang !---\\
+      $update = file_get_contents('php://input');
+      $update = json_decode($update, true);
+      $msg = $update["message"]?$update["message"]:null;
+      $channel = $update["channel_post"]?$update["channel_post"]:null;
+      $msgr = $msg["reply_to_message"]?$msg["reply_to_message"]:null;
+      $userMessage = $update["message"]["text"]?$update["message"]["text"]:"Nothing";
+      $firstName = $update["message"]["from"]["first_name"]?$update["message"]["from"]["first_name"]:"";
+      $lastName = $update["message"]["from"]["last_name"]?$update["message"]["from"]["last_name"]:"";
+      $fullName = $firstName." ".$lastName;
+      $usernamebot = "fuadazkabot";
+
+      //---! start message !---\\
+      if (preg_match('/start/i', $channel["text"])){
+        $parameters = array(
+          "chat_id" => $channel["chat"]["id"],
+          "text" => "hello ",
+          "parseMode" => "html",
+          "reply_to_message_id" => $msg["message_id"],
+        );
+        send("sendMessage", $parameters);
+      }
+
+      //---! start message !---\\
+      if (preg_match('/start/i', $msg["text"])){
+        $parameters = array(
+          "chat_id" => $msg["chat"]["id"],
+          "text" => "hello ".$fullName." Perkenalkan nama saya @".$usernamebot."\nwork",
+          "parseMode" => "html",
+          "reply_to_message_id" => $msg["message_id"],
+        );
+        send("sendMessage", $parameters);
+      }  
+
+      //---! send photo !---\\
+      if (preg_match('/poto/i', $msg["text"])){
+        $parameters = array(
+          "chat_id" => $msg["chat"]["id"],
+          "photo" => "https://telegra.ph/file/44cb191a5d03ffad95cdc.jpg",
+          "caption" => "ini foto",
+          "parseMode" => "html",
+        );
+        send("sendPhoto", $parameters);
+      }
+
+      //---! send video !---\\
+      if (preg_match('/video/i', $msg["text"])){
+        $parameters = array(
+          "chat_id" => $msg["chat"]["id"],
+          "video" => "https://telegra.ph/file/036bb217a6470709f2f62.mp4",
+          "caption" => "ini video",
+          "parseMode" => "html",
+        );
+        send("sendVideo", $parameters);
+      }
+
+      function send($method, $data){
+        global $BOT_TOKEN;
+        $url = "https://api.telegram.org/bot$BOT_TOKEN/$method";
+
+        if(!$curld = curl_init()){
+          exit;
+        }
+        curl_setopt($curld, CURLOPT_POST, true);
+        curl_setopt($curld, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curld, CURLOPT_URL, $url);
+        curl_setopt($curld, CURLOPT_RETURNTRANSFER, true);
+        $output = curl_exec($curld);
+        curl_close($curld);
+        return $output;
+      }
+
+    ?>
+    
+    <div class="page">
+      <div class="countdown-col col">
+        <div class="time middle">
+          <span>
+            <div id="d">12</div>
+            Days
+          </span>
+          <span>
+            <div id="h">06</div>
+            Hours
+          </span>
+          <span>
+            <div id="m">35</div>
+            Minutes
+          </span>
+          <span>
+            <div id="s">54</div>
+            Seconds
+          </span>
+        </div>
+      </div>
+      <div class="newsletter-col col">
+        <div class="newsletter middle">
+          <h2>We Will Coming Soon</h2>
+          <h4>Subscribe to get notification when we start</h4>
+          <form action="">
+            <input type="text" placeholder="Enter Your Email">
+            <input class="newsletter-btn" type="button" value="Subscribe">
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="countdown.js"></script>
+  </body>
+</html>
